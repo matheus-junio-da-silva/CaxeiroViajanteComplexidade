@@ -3,7 +3,7 @@
 #include <time.h>
 #include <sys/time.h>
 
-#define MAX_CITIES 100 // Defina o número máximo de cidades, ajuste conforme necessário
+//#define MAX_CITIES 100 // Defina o número máximo de cidades, ajuste conforme necessário
 
 // Função para calcular a soma dos dígitos de um número
 int sumDigits(int number) {
@@ -129,19 +129,33 @@ void generateRandomDistances(int **matrix, int N) {
 }
 
 // Função para ler distâncias de um arquivo .txt
-void readDistancesFromFile(int **matrix, int N) {
+void readDistancesFromFile(int **matrix, int *N) {
     FILE *file = fopen("test.txt", "r");
     if (file == NULL) {
-        printf("Erro ao abrir o arquivo1.\n");
+        printf("Erro ao abrir o arquivo0.\n");
         exit(1);
     }
 
-    for (int i = 0; i < N; i++) {
-        for (int j = 0; j < N; j++) {
-            if (fscanf(file, "%d", &matrix[i][j]) != 1) {
-                printf("Erro ao ler os dados do arquivo2.\n");
+    if (fscanf(file, "%d", N) != 1) {
+        printf("Erro ao ler o valor de N do arquivo1.\n");
+        exit(1);
+    }
+
+
+    for (int i = 0; i < *N; i++) {
+        for (int j = 0; j < *N; j++) {
+                if(i == j){
+                    matrix[i][j] = 0;
+                } else {
+                    fscanf(file, "%d", &matrix[i][j]);
+                }
+            /*
+            int result = fscanf(file, "%d", &matrix[i][j]);
+            if (result != 1) {
+                printf("Erro ao ler dados do arquivo: %d\n", result);
                 exit(1);
             }
+            */
         }
     }
 
@@ -153,16 +167,24 @@ int main()
 
     printf("Hello world!\n");
 
-    int N = 5;
+    int N;
+    scanf("%d", &N);
+
+    int NArq;
     int X;
     int **matrix;
 
-    X = sumDigits(12345) % N;
+    //printf("iii%d", sumDigits(538053825779));
+
+    //X = sumDigits(12345) % N;
+
+    X = 62 % N;
 
     matrix = (int **)malloc(N * sizeof(int *));
     for (int i = 0; i < N; i++) {
         matrix[i] = (int *)malloc(N * sizeof(int));
     }
+
 
     // Escolha entre gerar aleatoriamente ou ler do arquivo .txt
     int option;
@@ -171,8 +193,14 @@ int main()
 
     if (option == 1) {
         generateRandomDistances(matrix, N);
+        for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            printf("%d ", matrix[i][j]); // Adicione um espaço após cada número
+        }
+        printf("\n"); // Adicione uma quebra de linha após cada linha da matriz
+    }
     } else if (option == 2) {
-        readDistancesFromFile(matrix, N);
+        readDistancesFromFile(matrix, &NArq);
     } else {
         printf("Opção inválida.\n");
         return 1;
