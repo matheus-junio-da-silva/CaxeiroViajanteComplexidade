@@ -182,6 +182,18 @@ void readDistancesFromFile() {
         }
     }
 
+    clock_t start, end;
+    start = clock();
+
+    generatePermutations(cities, N - 1, matrix, N, X);
+
+    end = clock();
+
+    double cpu_time_used = ((double)(end - start)) / CLOCKS_PER_SEC;
+    printf("Tempo de execução: %f segundos\n", cpu_time_used);
+
+
+    /*
     struct timeval start, end;
     gettimeofday(&start, NULL);
 
@@ -191,7 +203,7 @@ void readDistancesFromFile() {
     long seconds = end.tv_sec - start.tv_sec;
     long micros = ((seconds * 1000000) + end.tv_usec) - (start.tv_usec);
     printf("Tempo de execução: %ld segundos e %ld microssegundos\n", seconds, micros);
-
+    */
     // Libere a memória alocada para a matriz
     for (int i = 0; i < N; i++) {
         free(matrix[i]);
@@ -201,24 +213,11 @@ void readDistancesFromFile() {
 
 int main()
 {
-
     printf("Hello world!\n");
-
-    int N;
-    printf("digite o tamanho da matriz quadrada:\n");
-    scanf("%d", &N);
-
     int X;
     int **matrix;
     int count;
-
-    X = 62 % N;
-
-    matrix = (int **)malloc(N * sizeof(int *));
-    for (int i = 0; i < N; i++) {
-        matrix[i] = (int *)malloc(N * sizeof(int));
-    }
-
+    int N2;
 
     // Escolha entre gerar aleatoriamente ou ler do arquivo .txt
     int option;
@@ -226,6 +225,17 @@ int main()
     scanf("%d", &option);
 
     if (option == 1) {
+        int N;
+        printf("digite o tamanho da matriz quadrada:\n");
+        scanf("%d", &N);
+        N2 = N;
+
+        X = 62 % N;
+        matrix = (int **)malloc(N * sizeof(int *));
+        for (int i = 0; i < N; i++) {
+            matrix[i] = (int *)malloc(N * sizeof(int));
+        }
+
         count = 1;
         generateRandomDistances(matrix, N);
         for (int i = 0; i < N; i++) {
@@ -242,26 +252,26 @@ int main()
     }
 
     if(count == 1){
-        int cities[N - 1];
-        for (int i = 0, j = 0; i < N; i++) {
+        int cities[N2 - 1];
+        for (int i = 0, j = 0; i < N2; i++) {
             if (i != X) {
                 cities[j] = i;
                 j++;
             }
         }
 
-        struct timeval start, end;
-        gettimeofday(&start, NULL);
+        clock_t start, end;
+        start = clock();
 
-        generatePermutations(cities, N - 1, matrix, N, X);
+        generatePermutations(cities, N2 - 1, matrix, N2, X);
 
-        gettimeofday(&end, NULL);
-        long seconds = end.tv_sec - start.tv_sec;
-        long micros = ((seconds * 1000000) + end.tv_usec) - (start.tv_usec);
-        printf("Tempo de execução: %ld segundos e %ld microssegundos\n", seconds, micros);
+        end = clock();
+
+        double cpu_time_used = ((double)(end - start)) / CLOCKS_PER_SEC;
+        printf("Tempo de execução: %f segundos\n", cpu_time_used);
 
         // Libere a memória alocada para a matriz
-        for (int i = 0; i < N; i++) {
+        for (int i = 0; i < N2; i++) {
             free(matrix[i]);
         }
         free(matrix);
