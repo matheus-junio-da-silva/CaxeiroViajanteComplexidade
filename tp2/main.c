@@ -129,37 +129,74 @@ void generateRandomDistances(int **matrix, int N) {
 }
 
 // Função para ler distâncias de um arquivo .txt
-void readDistancesFromFile(int **matrix, int *N) {
+void readDistancesFromFile() {
+
     FILE *file = fopen("test.txt", "r");
     if (file == NULL) {
         printf("Erro ao abrir o arquivo0.\n");
         exit(1);
     }
 
-    if (fscanf(file, "%d", N) != 1) {
+    int N;
+    if (fscanf(file, "%d", &N) != 1) {
         printf("Erro ao ler o valor de N do arquivo1.\n");
         exit(1);
     }
 
 
-    for (int i = 0; i < *N; i++) {
-        for (int j = 0; j < *N; j++) {
+    int X;
+    int **matrix;
+
+    X = 62 % N;
+
+    matrix = (int **)malloc(N * sizeof(int *));
+    for (int i = 0; i < N; i++) {
+        matrix[i] = (int *)malloc(N * sizeof(int));
+    }
+
+
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
                 if(i == j){
                     matrix[i][j] = 0;
                 } else {
                     fscanf(file, "%d", &matrix[i][j]);
                 }
-            /*
-            int result = fscanf(file, "%d", &matrix[i][j]);
-            if (result != 1) {
-                printf("Erro ao ler dados do arquivo: %d\n", result);
-                exit(1);
-            }
-            */
         }
     }
 
     fclose(file);
+
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            printf("%d ", matrix[i][j]); // Adicione um espaço após cada número
+        }
+        printf("\n"); // Adicione uma quebra de linha após cada linha da matriz
+    }
+
+    int cities[N - 1];
+    for (int i = 0, j = 0; i < N; i++) {
+        if (i != X) {
+            cities[j] = i;
+            j++;
+        }
+    }
+
+    struct timeval start, end;
+    gettimeofday(&start, NULL);
+
+    generatePermutations(cities, N - 1, matrix, N, X);
+
+    gettimeofday(&end, NULL);
+    long seconds = end.tv_sec - start.tv_sec;
+    long micros = ((seconds * 1000000) + end.tv_usec) - (start.tv_usec);
+    printf("Tempo de execução: %ld segundos e %ld microssegundos\n", seconds, micros);
+
+    // Libere a memória alocada para a matriz
+    for (int i = 0; i < N; i++) {
+        free(matrix[i]);
+    }
+    free(matrix);
 }
 
 int main()
@@ -168,15 +205,12 @@ int main()
     printf("Hello world!\n");
 
     int N;
+    printf("digite o tamanho da matriz quadrada:\n");
     scanf("%d", &N);
 
-    int NArq;
     int X;
     int **matrix;
-
-    //printf("iii%d", sumDigits(538053825779));
-
-    //X = sumDigits(12345) % N;
+    int count;
 
     X = 62 % N;
 
@@ -192,6 +226,7 @@ int main()
     scanf("%d", &option);
 
     if (option == 1) {
+        count = 1;
         generateRandomDistances(matrix, N);
         for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++) {
@@ -200,78 +235,38 @@ int main()
         printf("\n"); // Adicione uma quebra de linha após cada linha da matriz
     }
     } else if (option == 2) {
-        readDistancesFromFile(matrix, &NArq);
+        readDistancesFromFile();
     } else {
         printf("Opção inválida.\n");
         return 1;
     }
 
-    int cities[N - 1];
-    for (int i = 0, j = 0; i < N; i++) {
-        if (i != X) {
-            cities[j] = i;
-            j++;
+    if(count == 1){
+        int cities[N - 1];
+        for (int i = 0, j = 0; i < N; i++) {
+            if (i != X) {
+                cities[j] = i;
+                j++;
+            }
         }
+
+        struct timeval start, end;
+        gettimeofday(&start, NULL);
+
+        generatePermutations(cities, N - 1, matrix, N, X);
+
+        gettimeofday(&end, NULL);
+        long seconds = end.tv_sec - start.tv_sec;
+        long micros = ((seconds * 1000000) + end.tv_usec) - (start.tv_usec);
+        printf("Tempo de execução: %ld segundos e %ld microssegundos\n", seconds, micros);
+
+        // Libere a memória alocada para a matriz
+        for (int i = 0; i < N; i++) {
+            free(matrix[i]);
+        }
+        free(matrix);
     }
-
-    struct timeval start, end;
-    gettimeofday(&start, NULL);
-
-    generatePermutations(cities, N - 1, matrix, N, X);
-
-    gettimeofday(&end, NULL);
-    long seconds = end.tv_sec - start.tv_sec;
-    long micros = ((seconds * 1000000) + end.tv_usec) - (start.tv_usec);
-    printf("Tempo de execução: %ld segundos e %ld microssegundos\n", seconds, micros);
-
-    // Libere a memória alocada para a matriz
-    for (int i = 0; i < N; i++) {
-        free(matrix[i]);
-    }
-    free(matrix);
 
     return 0;
 
-    /*
-    int N = 5;
-    int X;
-    int **matrix;
-
-    X = sumDigits(12345) % N; // Faça a soma de todos os dígitos dos números de matrícula dos integrantes do grupo.Em seguida faça o resto da divisão por N desse valor.
-
-    matrix = (int **)malloc(N * sizeof(int *));
-    for (int i = 0; i < N; i++) {
-        matrix[i] = (int *)malloc(N * sizeof(int));
-    }
-
-    // Leia a matriz de distâncias do arquivo ou gere aleatoriamente
-    // readDistancesFromFile(matrix, N);
-    generateRandomDistances(matrix, N);
-
-    int cities[N - 1];
-    for (int i = 0, j = 0; i < N; i++) {
-        if (i != X) {
-            cities[j] = i;
-            j++;
-        }
-    }
-
-    struct timeval start, end;
-    gettimeofday(&start, NULL);
-
-    generatePermutations(cities, N - 1, matrix, N, X);
-
-    gettimeofday(&end, NULL);
-    long seconds = end.tv_sec - start.tv_sec;
-    long micros = ((seconds * 1000000) + end.tv_usec) - (start.tv_usec);
-    printf("Tempo de execução: %ld segundos e %ld microssegundos\n", seconds, micros);
-
-    // Libere a memória alocada para a matriz
-    for (int i = 0; i < N; i++) {
-        free(matrix[i]);
-    }
-    free(matrix);
-
-    return 0;
-    */
 }
